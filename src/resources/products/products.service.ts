@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Product } from 'prisma/generated';
 import { PrismaService } from 'src/services/prisma.service';
 
@@ -6,17 +6,29 @@ import { PrismaService } from 'src/services/prisma.service';
 export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(): Promise<Product[]> {
+  async findAll(): Promise<Partial<Product>[]> {
     const products = await this.prisma.product.findMany({
-      orderBy: {
-        createdAt: 'desc',
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        isHighlights: true,
       },
+      orderBy: [{ isHighlights: 'desc' }, { createdAt: 'desc' }],
     });
 
     return products;
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string): Promise<Product> {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new BadRequestException('Product not found');
+    }
+
+    return product;
   }
 }
