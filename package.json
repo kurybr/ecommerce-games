@@ -6,7 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "nest start --watch"
+    "dev": "nest start --watch",
+    "seed": "ts-node prisma/seed/products.seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
