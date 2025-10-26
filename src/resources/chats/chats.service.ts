@@ -19,32 +19,45 @@ export class ChatsService {
 
     async handleSaveMessage(message: Prisma.MessageCreateInput) {
 
-        const response = await this.prisma.message.create({ data: message })
+        if(!message.chatId) {
+
+            /** Salvamos no inicio da conversa o prompt do nosso agente. */
+            const { chatId } = await this.prisma.message.create({
+                data: {
+                    content: 'Você é o atendente da loja e deve dar informações sobre a loja',
+                    role: 'system'
+                }
+            })
+
+            message.chatId = chatId;
+
+        }
+
+        // Salvamos a mensagem do usuário
+        await this.prisma.message.create({ data: message })
+
+        const messages = await this.getHistoric(message.chatId);
 
         const agente_response = await this.openai.client.chat.completions.create({
             model: 'gpt-4o-mini',
             messages: [
-                {
-                    content: 'Você é o atendente da loja e deve dar informações sobre a loja',
-                    role: 'system'
-                },
-                {
-                    role:'user',
-                    content: message.message
-                }
+                ...messages
             ]
         })
 
         const text = agente_response.choices[0].message.content || "";
 
-        await this.prisma.message.create({
-            data: {
-                chatId: response.chatId,
-                message: text,
-                role: 'assistant'
-            }
-        })
+        const assistant_message: Prisma.MessageCreateInput = {
+            chatId: message.chatId,
+            content: text,
+            role: 'assistant'
+        }
 
-        return text;
+        await this.prisma.message.create({ data: assistant_message })
+
+        return {
+            chatId: message.chatId,
+            content: text
+        };
     }
 }

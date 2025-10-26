@@ -9,6 +9,6 @@ export class ChatsController {
   @Post('/message')
   async handleSendMessage(@Req() req: Request, @Res() res: Response, @Body() payload: IMessage) {
     const response = await this.chat.handleSaveMessage(payload);
-    return res.json({ send: true, message: response })
+    return res.json({ send: true, ...response })
   }
 }

@@ -7,7 +7,7 @@ enum Role {
 model Message {
     id String @id @default(uuid())
     role Role @default(user)
-    message String
+    content String
     chatId String @default(uuid())
     createdAt DateTime @default(now())
 }
