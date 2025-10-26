@@ -7,8 +7,9 @@ export class ChatsController {
   constructor(private readonly chat: ChatsService) {}
 
   @Post('/message')
-  handleSendMessage(@Req() req: Request, @Res() res: Response) {
+  async handleSendMessage(@Req() req: Request, @Res() res: Response) {
 
+    const response = await this.chat.handleSaveMessage(req.body);
     return res.json({ send: true })
   }
 }

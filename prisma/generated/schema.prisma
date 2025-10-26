@@ -1,3 +1,17 @@
+enum Role {
+  user
+  system
+  assistant
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  role      Role     @default(user)
+  message   String
+  chatId    String   @default(uuid())
+  createdAt DateTime @default(now())
+}
+
 model Product {
   id           String    @id @default(uuid())
   name         String
