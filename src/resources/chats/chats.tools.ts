@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ProductsService } from "../products/products.service";
 
 interface Tool {
 	name: string;
@@ -10,7 +11,7 @@ interface Tool {
 @Injectable()
 export class ChatAssistantTools {
     tools: Map<string, Tool> = new Map();
-    constructor() { }
+    constructor(private readonly products: ProductsService) { }
 
     getTools() {  return this.tools; }
 
@@ -29,9 +30,31 @@ export class ChatAssistantTools {
                 required: ['term']
             },
             handler: async (params) => {
-                console.log("Ativou a tool", params);
+                const items = await this.products.findAll()
+                return items;
+            }
+        })
 
-                return [];
+
+        this.tools.set('get_details_of_products', {
+            name: 'get_details_of_products',
+            description: `Acessa o banco de dados de jogos para recuperar informações sobre um jogo especifico`,
+            parameters: {
+                type: 'object',
+                properties: {
+                    productId: {
+                        type: 'string',
+                        description: 'ID do jogo que deseja recuperar mais informações'
+                    }
+                },
+                required: ['productId']
+            },
+            handler: async (params) => {
+                if(!params.productId) {
+                    return "Não foi identificado o código do produto que procura"
+                }
+                const product = await this.products.findOne(params.productId)
+                return product;
             }
         })
     }
