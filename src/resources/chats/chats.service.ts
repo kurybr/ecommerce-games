@@ -4,6 +4,8 @@ import { OpenIAService } from 'src/services/openia.service';
 import { PrismaService } from 'src/services/prisma.service';
 import fs from 'fs';
 import path from 'path';
+import { WhatsappService } from 'src/services/whatsapp.service';
+import Whatsapp from 'whatsapp-web.js';
 
 @Injectable()
 export class ChatsService implements OnModuleInit {
@@ -12,7 +14,10 @@ export class ChatsService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly openai: OpenIAService,
-  ) {}
+    private readonly wpp: WhatsappService
+  ) {
+    this.wpp.handleSubscribeEvent('message', this.handleWhatsappMessages.bind(this));
+  }
 
   onModuleInit() {
     const prompt = fs.readFileSync(
@@ -32,6 +37,7 @@ export class ChatsService implements OnModuleInit {
   }
 
   async handleSaveMessage(message: Prisma.MessageCreateInput) {
+
     if (!message.chatId) {
       /** Salvamos no inicio da conversa o prompt do nosso agente. */
       const { chatId } = await this.prisma.message.create({
@@ -70,4 +76,26 @@ export class ChatsService implements OnModuleInit {
       content: text,
     };
   }
+
+
+  async handleWhatsappMessages(msg: Whatsapp.Message) {
+
+     /** Salvamos no inicio da conversa o prompt do nosso agente. */
+    await this.prisma.message.create({
+        data: {
+          chatId: msg.id.remote,
+          content: this.prompt,
+          role: 'system',
+        },
+    });
+
+    const response = await this.handleSaveMessage( {
+        chatId: msg.id.remote,
+        content: msg.body
+    })
+
+    msg.reply(response.content)
+
+  }
+
 }
