@@ -24,7 +24,7 @@ export class ChatsService implements OnModuleInit {
 
   onModuleInit() {
     const prompt = fs.readFileSync(
-      path.join(process.cwd(), 'src/prompts/zero-shot-prompt-framework.md'),
+      path.join(process.cwd(), 'src/prompts/chat.prompt.md'),
       'utf8',
     );
 
@@ -43,7 +43,10 @@ export class ChatsService implements OnModuleInit {
 
   async handleSaveMessage(message: Prisma.MessageCreateInput) {
 
-    if (!message.chatId) {
+    let messages = await this.getHistoric(message.chatId as string);
+
+    if (!messages.some(msg => msg.role === 'system')) {
+
       /** Salvamos no inicio da conversa o prompt do nosso agente. */
       const { chatId } = await this.prisma.message.create({
         data: {
@@ -58,7 +61,7 @@ export class ChatsService implements OnModuleInit {
     // Salvamos a mensagem do usuário
     await this.prisma.message.create({ data: message });
 
-    const messages = await this.getHistoric(message.chatId);
+    messages = await this.getHistoric(message.chatId as string);
 
     const tools: ChatCompletionTool[] = Array.from(this.chatTools.tools.values()).map(tool => ({
 			type: 'function',
@@ -71,12 +74,19 @@ export class ChatsService implements OnModuleInit {
 
     const prepareMessage = (messages) => {
       return  messages.map((msg) => {
-        return {
+
+        console.log({
+          msg
+        })
+
+        const data = {
             role: msg.role,
             content: msg.content,
             ...(msg.tool_calls && { tool_calls: JSON.parse(msg.tool_calls) as [] }),
-            ...(msg.tool_call_id && { tool_call_id: message.tool_call_id })
-          } as ChatCompletionMessageParam
+            ...(msg.tool_call_id && { tool_call_id: msg.tool_call_id })
+        } as ChatCompletionMessageParam
+        console.log(data);
+        return data;
       })
     }
 
@@ -125,11 +135,16 @@ export class ChatsService implements OnModuleInit {
 
           const data = await actual_tool.handler(toolArgs, { chatId: message.chatId })
 
+          console.log(tool);
+
           const result: Prisma.MessageCreateInput = {
               role: 'tool',
               tool_call_id: tool.id,
               content: JSON.stringify(data),
           }
+
+          console.log('\n\n\n\n\n\n\n\n\n')
+          console.log({result});
 
           const tool_message = await this.prisma.message.create({
               data: {...result},
@@ -140,6 +155,11 @@ export class ChatsService implements OnModuleInit {
       }
 
     }
+
+    console.log('\n\n\n\n\n\n\n\n\n')
+    console.log({
+      messages: prepareMessage(messages)
+    });
 
 
     agente_response = await this.openai.client.chat.completions.create({
@@ -171,14 +191,6 @@ export class ChatsService implements OnModuleInit {
     if(!msg.id.remote.includes('5518981482812@c.us')) return;
 
      /** Salvamos no inicio da conversa o prompt do nosso agente. */
-    await this.prisma.message.create({
-        data: {
-          chatId: msg.id.remote,
-          content: this.prompt,
-          role: 'system',
-        },
-    });
-
     const response = await this.handleSaveMessage( {
         chatId: msg.id.remote,
         content: msg.body
