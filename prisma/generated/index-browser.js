@@ -120,6 +120,8 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.MessageScalarFieldEnum = {
   id: 'id',
   role: 'role',
+  tool_calls: 'tool_calls',
+  tool_call_id: 'tool_call_id',
   content: 'content',
   chatId: 'chatId',
   createdAt: 'createdAt'
@@ -148,7 +150,8 @@ exports.Prisma.NullsOrder = {
 exports.Role = exports.$Enums.Role = {
   user: 'user',
   system: 'system',
-  assistant: 'assistant'
+  assistant: 'assistant',
+  tool: 'tool'
 };
 
 exports.Prisma.ModelName = {

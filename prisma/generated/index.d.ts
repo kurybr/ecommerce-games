@@ -31,7 +31,8 @@ export namespace $Enums {
   export const Role: {
   user: 'user',
   system: 'system',
-  assistant: 'assistant'
+  assistant: 'assistant',
+  tool: 'tool'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -983,6 +984,8 @@ export namespace Prisma {
   export type MessageMinAggregateOutputType = {
     id: string | null
     role: $Enums.Role | null
+    tool_calls: string | null
+    tool_call_id: string | null
     content: string | null
     chatId: string | null
     createdAt: Date | null
@@ -991,6 +994,8 @@ export namespace Prisma {
   export type MessageMaxAggregateOutputType = {
     id: string | null
     role: $Enums.Role | null
+    tool_calls: string | null
+    tool_call_id: string | null
     content: string | null
     chatId: string | null
     createdAt: Date | null
@@ -999,6 +1004,8 @@ export namespace Prisma {
   export type MessageCountAggregateOutputType = {
     id: number
     role: number
+    tool_calls: number
+    tool_call_id: number
     content: number
     chatId: number
     createdAt: number
@@ -1009,6 +1016,8 @@ export namespace Prisma {
   export type MessageMinAggregateInputType = {
     id?: true
     role?: true
+    tool_calls?: true
+    tool_call_id?: true
     content?: true
     chatId?: true
     createdAt?: true
@@ -1017,6 +1026,8 @@ export namespace Prisma {
   export type MessageMaxAggregateInputType = {
     id?: true
     role?: true
+    tool_calls?: true
+    tool_call_id?: true
     content?: true
     chatId?: true
     createdAt?: true
@@ -1025,6 +1036,8 @@ export namespace Prisma {
   export type MessageCountAggregateInputType = {
     id?: true
     role?: true
+    tool_calls?: true
+    tool_call_id?: true
     content?: true
     chatId?: true
     createdAt?: true
@@ -1106,6 +1119,8 @@ export namespace Prisma {
   export type MessageGroupByOutputType = {
     id: string
     role: $Enums.Role
+    tool_calls: string | null
+    tool_call_id: string | null
     content: string
     chatId: string
     createdAt: Date
@@ -1131,6 +1146,8 @@ export namespace Prisma {
   export type MessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     role?: boolean
+    tool_calls?: boolean
+    tool_call_id?: boolean
     content?: boolean
     chatId?: boolean
     createdAt?: boolean
@@ -1139,6 +1156,8 @@ export namespace Prisma {
   export type MessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     role?: boolean
+    tool_calls?: boolean
+    tool_call_id?: boolean
     content?: boolean
     chatId?: boolean
     createdAt?: boolean
@@ -1147,6 +1166,8 @@ export namespace Prisma {
   export type MessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     role?: boolean
+    tool_calls?: boolean
+    tool_call_id?: boolean
     content?: boolean
     chatId?: boolean
     createdAt?: boolean
@@ -1155,12 +1176,14 @@ export namespace Prisma {
   export type MessageSelectScalar = {
     id?: boolean
     role?: boolean
+    tool_calls?: boolean
+    tool_call_id?: boolean
     content?: boolean
     chatId?: boolean
     createdAt?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "content" | "chatId" | "createdAt", ExtArgs["result"]["message"]>
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "tool_calls" | "tool_call_id" | "content" | "chatId" | "createdAt", ExtArgs["result"]["message"]>
 
   export type $MessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Message"
@@ -1168,6 +1191,8 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       role: $Enums.Role
+      tool_calls: string | null
+      tool_call_id: string | null
       content: string
       chatId: string
       createdAt: Date
@@ -1596,6 +1621,8 @@ export namespace Prisma {
   interface MessageFieldRefs {
     readonly id: FieldRef<"Message", 'String'>
     readonly role: FieldRef<"Message", 'Role'>
+    readonly tool_calls: FieldRef<"Message", 'String'>
+    readonly tool_call_id: FieldRef<"Message", 'String'>
     readonly content: FieldRef<"Message", 'String'>
     readonly chatId: FieldRef<"Message", 'String'>
     readonly createdAt: FieldRef<"Message", 'DateTime'>
@@ -3043,6 +3070,8 @@ export namespace Prisma {
   export const MessageScalarFieldEnum: {
     id: 'id',
     role: 'role',
+    tool_calls: 'tool_calls',
+    tool_call_id: 'tool_call_id',
     content: 'content',
     chatId: 'chatId',
     createdAt: 'createdAt'
@@ -3137,6 +3166,8 @@ export namespace Prisma {
     NOT?: MessageWhereInput | MessageWhereInput[]
     id?: StringFilter<"Message"> | string
     role?: EnumRoleFilter<"Message"> | $Enums.Role
+    tool_calls?: StringNullableFilter<"Message"> | string | null
+    tool_call_id?: StringNullableFilter<"Message"> | string | null
     content?: StringFilter<"Message"> | string
     chatId?: StringFilter<"Message"> | string
     createdAt?: DateTimeFilter<"Message"> | Date | string
@@ -3145,6 +3176,8 @@ export namespace Prisma {
   export type MessageOrderByWithRelationInput = {
     id?: SortOrder
     role?: SortOrder
+    tool_calls?: SortOrderInput | SortOrder
+    tool_call_id?: SortOrderInput | SortOrder
     content?: SortOrder
     chatId?: SortOrder
     createdAt?: SortOrder
@@ -3156,6 +3189,8 @@ export namespace Prisma {
     OR?: MessageWhereInput[]
     NOT?: MessageWhereInput | MessageWhereInput[]
     role?: EnumRoleFilter<"Message"> | $Enums.Role
+    tool_calls?: StringNullableFilter<"Message"> | string | null
+    tool_call_id?: StringNullableFilter<"Message"> | string | null
     content?: StringFilter<"Message"> | string
     chatId?: StringFilter<"Message"> | string
     createdAt?: DateTimeFilter<"Message"> | Date | string
@@ -3164,6 +3199,8 @@ export namespace Prisma {
   export type MessageOrderByWithAggregationInput = {
     id?: SortOrder
     role?: SortOrder
+    tool_calls?: SortOrderInput | SortOrder
+    tool_call_id?: SortOrderInput | SortOrder
     content?: SortOrder
     chatId?: SortOrder
     createdAt?: SortOrder
@@ -3178,6 +3215,8 @@ export namespace Prisma {
     NOT?: MessageScalarWhereWithAggregatesInput | MessageScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Message"> | string
     role?: EnumRoleWithAggregatesFilter<"Message"> | $Enums.Role
+    tool_calls?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    tool_call_id?: StringNullableWithAggregatesFilter<"Message"> | string | null
     content?: StringWithAggregatesFilter<"Message"> | string
     chatId?: StringWithAggregatesFilter<"Message"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Message"> | Date | string
@@ -3255,6 +3294,8 @@ export namespace Prisma {
   export type MessageCreateInput = {
     id?: string
     role?: $Enums.Role
+    tool_calls?: string | null
+    tool_call_id?: string | null
     content: string
     chatId?: string
     createdAt?: Date | string
@@ -3263,6 +3304,8 @@ export namespace Prisma {
   export type MessageUncheckedCreateInput = {
     id?: string
     role?: $Enums.Role
+    tool_calls?: string | null
+    tool_call_id?: string | null
     content: string
     chatId?: string
     createdAt?: Date | string
@@ -3271,6 +3314,8 @@ export namespace Prisma {
   export type MessageUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    tool_calls?: NullableStringFieldUpdateOperationsInput | string | null
+    tool_call_id?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     chatId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3279,6 +3324,8 @@ export namespace Prisma {
   export type MessageUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    tool_calls?: NullableStringFieldUpdateOperationsInput | string | null
+    tool_call_id?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     chatId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3287,6 +3334,8 @@ export namespace Prisma {
   export type MessageCreateManyInput = {
     id?: string
     role?: $Enums.Role
+    tool_calls?: string | null
+    tool_call_id?: string | null
     content: string
     chatId?: string
     createdAt?: Date | string
@@ -3295,6 +3344,8 @@ export namespace Prisma {
   export type MessageUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    tool_calls?: NullableStringFieldUpdateOperationsInput | string | null
+    tool_call_id?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     chatId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3303,6 +3354,8 @@ export namespace Prisma {
   export type MessageUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    tool_calls?: NullableStringFieldUpdateOperationsInput | string | null
+    tool_call_id?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     chatId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3406,6 +3459,20 @@ export namespace Prisma {
     not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[]
@@ -3417,9 +3484,16 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
   export type MessageCountOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
+    tool_calls?: SortOrder
+    tool_call_id?: SortOrder
     content?: SortOrder
     chatId?: SortOrder
     createdAt?: SortOrder
@@ -3428,6 +3502,8 @@ export namespace Prisma {
   export type MessageMaxOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
+    tool_calls?: SortOrder
+    tool_call_id?: SortOrder
     content?: SortOrder
     chatId?: SortOrder
     createdAt?: SortOrder
@@ -3436,6 +3512,8 @@ export namespace Prisma {
   export type MessageMinOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
+    tool_calls?: SortOrder
+    tool_call_id?: SortOrder
     content?: SortOrder
     chatId?: SortOrder
     createdAt?: SortOrder
@@ -3466,6 +3544,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumRoleFilter<$PrismaModel>
     _max?: NestedEnumRoleFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -3507,11 +3602,6 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type ProductCountOrderByAggregateInput = {
@@ -3601,6 +3691,10 @@ export namespace Prisma {
     set?: $Enums.Role
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -3640,6 +3734,20 @@ export namespace Prisma {
     in?: $Enums.Role[]
     notIn?: $Enums.Role[]
     not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -3689,6 +3797,34 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumRoleFilter<$PrismaModel>
     _max?: NestedEnumRoleFilter<$PrismaModel>
+  }
+
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -3768,17 +3904,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
 

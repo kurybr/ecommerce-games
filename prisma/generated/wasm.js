@@ -92,6 +92,8 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.MessageScalarFieldEnum = {
   id: 'id',
   role: 'role',
+  tool_calls: 'tool_calls',
+  tool_call_id: 'tool_call_id',
   content: 'content',
   chatId: 'chatId',
   createdAt: 'createdAt'
@@ -120,7 +122,8 @@ exports.Prisma.NullsOrder = {
 exports.Role = exports.$Enums.Role = {
   user: 'user',
   system: 'system',
-  assistant: 'assistant'
+  assistant: 'assistant',
+  tool: 'tool'
 };
 
 exports.Prisma.ModelName = {
@@ -174,13 +177,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "enum Role {\n  user\n  system\n  assistant\n}\n\nmodel Message {\n  id        String   @id @default(uuid())\n  role      Role     @default(user)\n  content   String\n  chatId    String   @default(uuid())\n  createdAt DateTime @default(now())\n}\n\nmodel Product {\n  id           String    @id @default(uuid())\n  name         String\n  price        Float\n  description  String\n  isHighlights Boolean   @default(false)\n  createdAt    DateTime  @default(now())\n  updatedAt    DateTime  @updatedAt\n  removedAt    DateTime?\n}\n\n// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n",
-  "inlineSchemaHash": "4a20f47c2deba6ea2797b54ef801574e275ed94e9c692ae0e4f92b76b37b971d",
+  "inlineSchema": "enum Role {\n  user\n  system\n  assistant\n  tool\n}\n\nmodel Message {\n  id           String   @id @default(uuid())\n  role         Role     @default(user)\n  tool_calls   String? // Como o SQLite não suporta array nativamente, a gente vai contornar com um JSON.stringify aqui\n  tool_call_id String?\n  content      String\n  chatId       String   @default(uuid())\n  createdAt    DateTime @default(now())\n}\n\nmodel Product {\n  id           String    @id @default(uuid())\n  name         String\n  price        Float\n  description  String\n  isHighlights Boolean   @default(false)\n  createdAt    DateTime  @default(now())\n  updatedAt    DateTime  @updatedAt\n  removedAt    DateTime?\n}\n\n// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n",
+  "inlineSchemaHash": "695c953184667194675bc6965c1bdec945a4932df0e1d5a7dfa6158ae31a2921",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Message\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"chatId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Product\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isHighlights\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"removedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Message\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"tool_calls\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tool_call_id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"chatId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Product\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isHighlights\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"removedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

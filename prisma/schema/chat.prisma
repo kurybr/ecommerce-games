@@ -2,11 +2,14 @@ enum Role {
   user
   system
   assistant
+  tool
 }
 
 model Message {
     id String @id @default(uuid())
     role Role @default(user)
+    tool_calls String? // Como o SQLite não suporta array nativamente, a gente vai contornar com um JSON.stringify aqui
+    tool_call_id String?
     content String
     chatId String @default(uuid())
     createdAt DateTime @default(now())

@@ -1,11 +1,13 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Prisma } from 'prisma/generated';
+import { Prisma, Role } from 'prisma/generated';
 import { OpenIAService } from 'src/services/openia.service';
 import { PrismaService } from 'src/services/prisma.service';
 import fs from 'fs';
 import path from 'path';
 import { WhatsappService } from 'src/services/whatsapp.service';
 import Whatsapp from 'whatsapp-web.js';
+import { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources/index';
+import { ChatAssistantTools } from './chats.tools';
 
 @Injectable()
 export class ChatsService implements OnModuleInit {
@@ -14,7 +16,8 @@ export class ChatsService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly openai: OpenIAService,
-    private readonly wpp: WhatsappService
+    private readonly wpp: WhatsappService,
+    private readonly chatTools: ChatAssistantTools
   ) {
     this.wpp.handleSubscribeEvent('message', this.handleWhatsappMessages.bind(this));
   }
@@ -26,6 +29,8 @@ export class ChatsService implements OnModuleInit {
     );
 
     this.prompt = prompt;
+    this.chatTools.registerTools();
+
   }
 
   async getHistoric(chatId: string) {
@@ -55,10 +60,93 @@ export class ChatsService implements OnModuleInit {
 
     const messages = await this.getHistoric(message.chatId);
 
-    const agente_response = await this.openai.client.chat.completions.create({
+    const tools: ChatCompletionTool[] = Array.from(this.chatTools.tools.values()).map(tool => ({
+			type: 'function',
+			function: {
+				name: tool.name,
+				description: tool.description,
+				parameters: tool.parameters
+			}
+		}));
+
+    const prepareMessage = (messages) => {
+      return  messages.map((msg) => {
+        return {
+            role: msg.role,
+            content: msg.content,
+            ...(msg.tool_calls && { tool_calls: JSON.parse(msg.tool_calls) as [] }),
+            ...(msg.tool_call_id && { tool_call_id: message.tool_call_id })
+          } as ChatCompletionMessageParam
+      })
+    }
+
+    let agente_response = await this.openai.client.chat.completions.create({
       model: this.model,
       temperature: 0.7,
-      messages: [...messages],
+      messages: prepareMessage(messages),
+      tools,
+      tool_choice: 'auto'
+    });
+
+
+    console.log(agente_response.choices);
+
+    /**
+     * Vamos chamar uma tool.
+     */
+    if(agente_response.choices[0].message.tool_calls && agente_response.choices[0].message.tool_calls.length) {
+
+      const { tool_calls } = agente_response.choices[0].message;
+
+      for await (const tool of tool_calls) {
+
+          if (tool.type !== 'function' || !tool.function) { continue; }
+
+          const { name, arguments: toolArgs } = tool.function;
+
+          const actual_tool = this.chatTools.tools.get(name);
+
+          if(!actual_tool) {
+
+            const result: Prisma.MessageCreateInput = {
+                role: 'tool',
+                tool_call_id: tool.id,
+                content: JSON.stringify({  error: 'Ferramenta não encontrada', tool_name: name}),
+            }
+
+            const tool_message = await this.prisma.message.create({
+                data: {...result},
+            });
+
+            messages.push(tool_message);
+            continue;
+          }
+
+
+          const data = await actual_tool.handler(toolArgs, { chatId: message.chatId })
+
+          const result: Prisma.MessageCreateInput = {
+              role: 'tool',
+              tool_call_id: tool.id,
+              content: JSON.stringify(data),
+          }
+
+          const tool_message = await this.prisma.message.create({
+              data: {...result},
+          });
+
+          messages.push(tool_message);
+
+      }
+
+    }
+
+
+    agente_response = await this.openai.client.chat.completions.create({
+      model: this.model,
+      temperature: 0.7,
+      messages: prepareMessage(messages),
+      tools
     });
 
     const text = agente_response.choices[0].message.content || '';
@@ -80,6 +168,8 @@ export class ChatsService implements OnModuleInit {
 
   async handleWhatsappMessages(msg: Whatsapp.Message) {
 
+    if(!msg.id.remote.includes('5518981482812@c.us')) return;
+
      /** Salvamos no inicio da conversa o prompt do nosso agente. */
     await this.prisma.message.create({
         data: {
@@ -97,5 +187,7 @@ export class ChatsService implements OnModuleInit {
     msg.reply(response.content)
 
   }
+
+
 
 }
