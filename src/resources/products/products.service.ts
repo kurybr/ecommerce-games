@@ -1,13 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Product } from 'prisma/generated';
+import { Prisma, Product } from 'prisma/generated';
+import { DefaultArgs } from 'prisma/generated/runtime/library';
 import { PrismaService } from 'src/services/prisma.service';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(): Promise<Partial<Product>[]> {
-    const products = await this.prisma.product.findMany({
+  async findAll(term?: string): Promise<Partial<Product>[]> {
+
+
+    const query: Prisma.ProductFindManyArgs<DefaultArgs> = {
       select: {
         id: true,
         name: true,
@@ -15,7 +18,15 @@ export class ProductsService {
         isHighlights: true,
       },
       orderBy: [{ isHighlights: 'desc' }, { createdAt: 'desc' }],
-    });
+    }
+
+    if(term) {
+      query.where = {
+        name: {  contains: term }
+      }
+    }
+
+    const products = await this.prisma.product.findMany(query);
 
     return products;
   }

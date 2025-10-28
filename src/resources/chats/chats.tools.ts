@@ -12,9 +12,6 @@ interface Tool {
 export class ChatAssistantTools {
     tools: Map<string, Tool> = new Map();
     constructor(private readonly products: ProductsService) { }
-
-    getTools() {  return this.tools; }
-
     registerTools() {
         this.tools.set('search_products', {
             name: 'search_products',
@@ -24,13 +21,13 @@ export class ChatAssistantTools {
                 properties: {
                     term: {
                         type: 'string',
-                        description: 'Nome completo ou parcial do jogo que quer buscar maiores informações'
+                        description: 'Caso precise buscar sobre um titulo de jogo nome completo ou parcial do titulo utilize esse parametro'
                     }
                 },
                 required: ['term']
             },
-            handler: async (params) => {
-                const items = await this.products.findAll()
+            handler: async ({ term }) => {
+                const items = await this.products.findAll( term )
                 return items;
             }
         })
@@ -38,7 +35,10 @@ export class ChatAssistantTools {
 
         this.tools.set('get_details_of_products', {
             name: 'get_details_of_products',
-            description: `Acessa o banco de dados de jogos para recuperar informações sobre um jogo especifico`,
+            description: `
+            Acessa o banco de dados de jogos para recuperar informações sobre um jogo especifico
+            IMPORTANTE: Use primeiro a ferramenta search_products para obter os ID do produto
+            `.trim(),
             parameters: {
                 type: 'object',
                 properties: {

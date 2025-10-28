@@ -139,7 +139,7 @@ export class ChatsService implements OnModuleInit {
           continue;
         }
 
-        const data = await actual_tool.handler(toolArgs, { chatId: message.chatId });
+        const data = await actual_tool.handler(JSON.parse(toolArgs), { chatId: message.chatId });
 
         const result: Prisma.MessageCreateInput = {
           chatId: message.chatId,
